@@ -15,12 +15,20 @@ def main():
     #decoding
     tk = "\fim"
     tk_bin = np.unpackbits(np.array([ord(lttr) for lttr in tk], dtype='uint8'))
-    print(tk_bin)
+    tk_bin_sz = tk_bin.shape[0]
+    print(tk_bin_sz)
     x, y, z = img.shape
-    img_bin = np.reshape(np.unpackbits(img, axis=2), (x * z * y, 8))
+    img_bin = np.reshape(np.unpackbits(img, axis=2), (x * z * y , 8))
+    print(img_bin.shape)
+    lower_bit = img_bin[:, 7]
+    print(lower_bit.shape)
+    for i in range(lower_bit.shape[0] - tk_bin_sz):
+        if (lower_bit[i:i + tk_bin_sz] == tk_bin).all():
+            break
+        
+    
 
-    print(img_bin[:, 7])
-    print(np.where(img_bin == tk_bin, True, False))
+        
 
 
 if __name__ == "__main__":
