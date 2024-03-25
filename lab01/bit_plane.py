@@ -29,7 +29,7 @@ def main():
             # Write the modified image to the output file
             img_bit_plane = np.zeros_like(img)
             img_bit_plane[:,:,i] = ((img[:,:,i] >> j) & 1) * 255
-            cv.imwrite(f'{output_path}/{input_image.split(".")[0]}_{chanel_name[i]}_plane_{j}.png', img_bit_plane)
+            cv.imwrite(f'{output_path}/{input_image.split("/")[-1].split(".")[0]}_{chanel_name[i]}_plane_{j}.png', img_bit_plane)
 
 if __name__ == '__main__':
     main()

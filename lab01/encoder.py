@@ -13,6 +13,8 @@ def main():
     max_bit_plane = int(sys.argv[3])
     output_image_path = sys.argv[4] 
 
+    print(input_image_path)
+    print(output_image_path)
     # Validate max_bit_plane
     if max_bit_plane not in (0, 1, 2):
         sys.exit("Invalid bit_plane value. Should be 0, 1, or 2.")
@@ -27,6 +29,7 @@ def main():
         text = file.read()
 
     # Convert text to binary ASCII representation
+    text.encode('ascii', 'ignore')
     text_ascii = [ord(char) for char in text] + [0]  # Add null terminator
     text_bin = np.unpackbits(np.array(text_ascii, dtype="uint8"))
 
