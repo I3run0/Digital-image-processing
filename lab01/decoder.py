@@ -20,7 +20,7 @@ def main():
         sys.exit("Could not read the image")
 
     # Extract the least significant bit from each pixel's
-    img_bin = np.reshape(np.unpackbits(img, axis=2), (img.shape[0] * img.shape[1] * img.shape[2], 8))
+    img_bin = np.reshape(np.unpackbits(img), (img.shape[0] * img.shape[1] * img.shape[2], 8))
     text_bin = np.transpose(img_bin[:, BITS_NUMBER - max_bit_plane:][:, ::-1])
     text_bin = np.reshape(text_bin, text_bin.shape[0] * text_bin.shape[1])
 
