@@ -22,7 +22,6 @@ def main():
     # Extract the least significant bit from each pixel's
     img_bin = np.reshape(np.unpackbits(img), (img.shape[0] * img.shape[1] * img.shape[2], 8))
     text_bin = np.transpose(img_bin[:, BITS_NUMBER - max_bit_plane:][:, ::-1])
-    text_bin = np.reshape(text_bin, text_bin.shape[0] * text_bin.shape[1])
 
     # Convert binary text to ASCII characters
     text_ascii = np.packbits(text_bin)
