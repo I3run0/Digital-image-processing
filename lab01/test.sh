@@ -6,6 +6,9 @@ run_scripts() {
     local output_path="$3"
     local bit_plane="$4"
 
+    shift 4
+    local bit_plane_to_view=("$@")
+
     local output_image
     output_image="$(basename "$input_image")"
     output_image="${output_image%.*}_output.png"
@@ -17,18 +20,14 @@ run_scripts() {
     mkdir -p "$output_path"
 
     echo "Running encoder.py script..."
-    python encoder.py "$input_image" "$input_text" "$bit_plane" "$output_path/$output_image"
+    python src/encoder.py "$input_image" "$input_text" "$bit_plane" "$output_path/$output_image"
 
     echo "Running decoder.py script..."
-    python decoder.py "$output_path/$output_image" "$bit_plane" "$output_path/$output_text"
-
-    list=()
-    for ((i = 1; i <= $bit_plane; i++)); do
-        list+=("$i")
-    done
+    python src/decoder.py "$output_path/$output_image" "$bit_plane" "$output_path/$output_text"
 
     echo "Running bit_plane.py script..."
-    python bit_plane.py "$input_image" "$output_path" "${list[@]}"
+    python src/bit_plane.py "$input_image" "$output_path" "${bit_plane_to_view[@]}"
+    python src/bit_plane.py "$output_path/$output_image" "$output_path" "${bit_plane_to_view[@]}"
 
     echo "Running message diff"
     diff -q "$input_text" "$output_path/$output_text" 
@@ -36,10 +35,11 @@ run_scripts() {
 }
 
 # Check if all required parameters are provided
-if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 input_image input_text output_path bit_plane"
+if [ "$#" -lt 5 ]; then
+echo "$#" < 5
+    echo "Usage: $0 input_image input_text output_path max_bit_plane_to_encode bit_plane_list_to_view"
     exit 1
 fi
 
 # Run the function with provided arguments
-run_scripts "$1" "$2" "$3" "$4"
+run_scripts "$@"
