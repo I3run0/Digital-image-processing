@@ -27,6 +27,7 @@ magnitude_spectrum = 20 * np.log(cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, 
 #and only high frequencies are allowed. Edges are high frequency components.
 #Amplifies noise.
 
+'''
 center = (img.shape[0]//2, img.shape[1]//2)
 r = 80
 mask = np.ones_like(dft_shift)
@@ -42,7 +43,7 @@ center = [crow, ccol]
 x, y = np.ogrid[:rows, :cols]
 mask_area = (x - center[0]) ** 2 + (y - center[1]) ** 2 <= r*r
 mask[mask_area] = 0
-'''
+
 
 # Circular LPF mask, center circle is 1, remaining all zeros
 # Only allows low frequency components - smooth regions
@@ -91,7 +92,7 @@ img_back = cv2.idft(f_ishift)
 #Magnitude spectrum of the image domain
 img_back = cv2.magnitude(img_back[:, :, 0], img_back[:, :, 1])
 
-
+cv2.imwrite("Baboon.png" ,img_back)
 
 fig = plt.figure(figsize=(12, 12))
 ax1 = fig.add_subplot(2,2,1)
@@ -106,6 +107,10 @@ ax3.title.set_text('FFT + Mask')
 ax4 = fig.add_subplot(2,2,4)
 ax4.imshow(img_back, cmap='gray')
 ax4.title.set_text('After inverse FFT')
+
+#cv2.imshow(img_back)
+#cv2.waitkey(0)
+#cv2.destroyAllWindows()
 plt.show()
 
 
