@@ -75,13 +75,17 @@ def main(argv):
         f_mag = reject_band_filter(mag, 80, 20)
     
     img_back = get_img_from_fft(f_fft)
+    
     plt.subplot(121)
     plt.imshow(img_back, cmap='grey')
     plt.title('FFT aplied filter')
     plt.xticks([]), plt.yticks([])
+    plt.subplot(122)
+    plt.imshow(f_mag, cmap='grey')
+    plt.title('Magnitude aspectrum')
+    plt.xticks([]), plt.yticks([])
     plt.show() 
-        
     
-
+    cv.imwrite("out.png", img_back)
 if __name__ == "__main__":
     main(sys.argv[1:])
