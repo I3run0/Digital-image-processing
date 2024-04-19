@@ -2,22 +2,7 @@ import sys
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-
-def get_fft_from_img(img):
-    f = np.fft.fft2(img)
-    f_shift = np.fft.fftshift(f)
-    return f_shift
-
-def get_mag_from_fft(fftshift):
-    return 20 * np.log(np.abs(fftshift))
-
-def get_img_from_fft(fftshift):
-    f_ishift = np.fft.ifftshift(fftshift)
-    img_back = np.fft.ifft2(f_ishift)
-    img_back = np.real(img_back)
-    return img_back
-
-#------------------------------------------
+import utils_transformations as uttf
 
 def get_circle_mask(r, cords, shape, fill):
     mask =  np.zeros(shape, dtype='uint8') if fill\
@@ -59,8 +44,8 @@ def main(argv):
     
     f_fft, f_mag = None, None
     
-    fft = get_fft_from_img(img)
-    mag = get_mag_from_fft(fft)
+    fft = uttf.get_fft_from_img(img)
+    mag = uttf.get_mag_from_fft(fft)
     if method == 0:
         f_fft = lower_pass_filter(fft, 80)
         f_mag = lower_pass_filter(mag, 80)
@@ -74,14 +59,14 @@ def main(argv):
         f_fft = reject_band_filter(fft, 80, 20)
         f_mag = reject_band_filter(mag, 80, 20)
     
-    img_back = get_img_from_fft(f_fft)
+    img_back = uttf.get_img_from_fft(f_fft)
     
     plt.subplot(121)
-    plt.imshow(img_back, cmap='grey')
+    plt.imshow(img_back, cmap='gray')
     plt.title('FFT aplied filter')
     plt.xticks([]), plt.yticks([])
     plt.subplot(122)
-    plt.imshow(f_mag, cmap='grey')
+    plt.imshow(f_mag, cmap='gray')
     plt.title('Magnitude aspectrum')
     plt.xticks([]), plt.yticks([])
     plt.show() 
