@@ -144,10 +144,13 @@ def main(argv):
     plt.xticks([]), plt.yticks([])
     plt.show() 
     '''
-    cv.imwrite(f'{out_dir}/{img_name}.{img_ext}', img_back)
+    
+    out_path = f'{out_dir}/{img_name}_{method}_{"_".join(parameters)}'
+    cv.imwrite(f'{out_path}.{img_ext}', img_back)
 
     if gen_spec:
-        cv.imwrite(f'{out_dir}/{img_name}_spec.{img_ext}', mag)
-        cv.imwrite(f'{out_dir}/{img_name}_spec_cropped.{img_ext}', f_mag)
+        cv.imwrite(f'{out_path}_spec.{img_ext}', mag)
+        cv.imwrite(f'{out_path}_spec_cropped.{img_ext}', f_mag)
+
 if __name__ == "__main__":
     main(sys.argv[1:])
