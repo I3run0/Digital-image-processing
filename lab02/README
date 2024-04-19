@@ -1,0 +1,95 @@
+# Utilização de Transformada de Fourier em Processamento de Imagens
+
+Este repositório contém uma coleção de scripts Python que demonstram diferentes técnicas de processamento de imagens utilizando Transformada de Fourier Rápida (FFT). Cada script aborda um aspecto específico do processamento de imagens, como a visualização do espectro de magnitude, aplicação de filtros, compressão e utilitários para manipulação da FFT.
+
+## Informações pessoais
+
+#### `Nome:` Bruno Sobreira França
+
+#### `RA:` 217787
+
+#### `Turma:` Mc920 - 2024S1
+
+## Arquivos do Projeto
+
+### `fft_mag_spec.py`
+
+Este script calcula o espectro de magnitude de uma imagem usando a Transformada de Fourier. Ele permite visualizar as diferentes frequências presentes na imagem, destacando as áreas de alta e baixa frequência.
+
+### `fft_filters.py`
+
+Este script demonstra como aplicar filtros passa-baixa, passa-alta, passa-faixa e rejeita-faixa em uma imagem usando a Transformada de Fourier. Os filtros são usados para realçar ou suavizar diferentes características da imagem, dependendo das frequências que são permitidas ou eliminadas.
+
+### `fft_compress.py`
+
+Este script ilustra como comprimir uma imagem usando a técnica de compressão baseada em FFT. Ele reduz a quantidade de dados da imagem preservando as características importantes por meio da remoção de frequências menos significativas.
+
+### `fft_utils.py`
+
+Este arquivo contém funções utilitárias para calcular a FFT de uma imagem, obter o espectro de magnitude e reconstruir a imagem a partir da FFT.
+
+## Execução dos Scripts
+
+### `fft_filters.py`
+
+Para executar o script `fft_filters.py`, utilize o seguinte comando no terminal:
+
+```bash
+python fft_filters.py -m <tipo_de_filtro> -p <parametros_do_filtro> -s <caminho_para_imagem_entrada>
+```
+
+- `<tipo_de_filtro>`: Especifique o tipo de filtro a ser aplicado. Opções disponíveis: `low`, `high`, `band`, `reject`.
+- `<parametros_do_filtro`: Especifique o tamanho do raio do circulo utilizado durante a aplicação do filtro. Caso o filtro seja dos metódos `band` e `reject`, deve ser provido dois valores de raio separados por `,`.
+- `<espectro_de_magnitude>`: Ao utilizar `-s` no commando de execução, o programa fornecera também o espectro de magnitude da imagem após a utilização do filtro especificado.
+- `<caminho_para_imagem_entrada>`: Forneça o caminho para a imagem de entrada.
+
+Exemplos:
+
+O comando a seguir gera uma imagem no caminho o `output_images/low/input_image_low.png`. Nele está especificado que deve ser aplicado o filtro passa-baixa com a utilização de um raio de 80 pixel e que não é necessário gerer o espectro de magnitude da imagem.
+
+```bash
+python fft_filters.py -m low -p 80 input_image.png
+```
+
+O proximo comando gera uma imagem no caminho o `output_images/reject/input_image_low.png`. Nele está especificado que deve ser aplicado o filtro rejeita-faixa com a utilização de um raio de 80 pixel no circulo externo, 20 pixel naquele interno e que é necessário gerer o espectro de magnitude da imagem.
+
+```bash
+python fft_filters.py -m reject -p 80,20 -s input_image.png
+```
+
+-------
+
+### `fft_mag_spec.py`
+Para executar o script `fft_mag_spec.py`, utilize o seguinte comando no terminal:
+
+```bash
+python fft_mag_spec.py <caminho_para_imagem_entrada> <caminho_para_imagem_saida>
+```
+
+- `<caminho_para_imagem_entrada>`: Forneça o caminho para a imagem de entrada.
+- `<caminho_para_imagem_saida>`: Especifique o caminho para salvar a imagem de saída.
+
+Exemplo:
+
+```bash
+python fft_mag_spec.py input_image.jpg output_image_mag_spec.png
+   ```
+
+------
+
+### `fft_compress.py`
+Para executar o script `fft_compress.py`, utilize o seguinte comando no terminal:
+
+```bash
+python fft_compress.py <fator_de_compressão> <caminho_para_imagem_entrada> <caminho_para_imagem_saida>
+```
+
+- `<fator_de_compressão>`: Especifique o fator de compressão como um número entre 0 e 1, onde 0 significa nenhuma compressão e 1 significa compressão total.
+- `<caminho_para_imagem_entrada>`: Forneça o caminho para a imagem de entrada.
+- `<caminho_para_imagem_saida>`: Especifique o caminho para salvar a imagem de saída.
+
+Exemplo:
+
+```bash
+python fft_compress.py 0.5 input_image.jpg output_image_compressed.png
+```
