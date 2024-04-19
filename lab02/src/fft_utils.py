@@ -41,5 +41,8 @@ def get_img_from_fft(fft_shift):
     img_back = np.fft.ifft2(f_ishift)
     img_back = np.real(img_back)  # Take the real part to remove imaginary artifacts
     return img_back
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 5ebcc7939279a90cd9c61c6898bd2481dc67c411
