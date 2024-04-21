@@ -22,8 +22,7 @@ def main(argv):
     f_mag = uts.get_mag_from_fft(fft)
 
     # Write the processed image to the output file
-    output_filename = output_image_path.split('.')[0] + '_mag.png'
-    cv.imwrite(output_filename, f_mag)
+    cv.imwrite(output_image_path, f_mag)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
