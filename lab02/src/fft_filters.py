@@ -80,9 +80,8 @@ def apply_reject_band_filter(fft, radius_higher, radius_lower):
     Returns:
         numpy.ndarray: Filtered Fourier Transform.
     """
-    filtered_fft = apply_higher_pass_filter(fft, radius_higher)
-    mask = get_circle_mask(radius_lower, (fft.shape[0] // 2, fft.shape[1] // 2), fft.shape, True)
-    filtered_fft[mask == 1] = fft[mask == 1]
+    band_pass = apply_band_pass_filter(fft, radius_higher, radius_lower)
+    filtered_fft = fft - band_pass
     return filtered_fft
 
 def main(argv):
