@@ -1,4 +1,4 @@
-# Utilização de Transformada de Fourier em Processamento de Imagens
+# Utilização de Transformada de Fourier em Processamento de Imagens Digitais
 
 Este repositório contém uma coleção de scripts Python que demonstram diferentes técnicas de processamento de imagens utilizando Transformada de Fourier Rápida (FFT). Cada script aborda um aspecto específico do processamento de imagens, como a visualização do espectro de magnitude, aplicação de filtros, compressão e utilitários para manipulação da FFT.
 
@@ -14,7 +14,7 @@ Este repositório contém uma coleção de scripts Python que demonstram diferen
 
 ### `fft_mag_spec.py`
 
-Este script calcula o espectro de magnitude de uma imagem usando a Transformada de Fourier. Ele permite visualizar as diferentes frequências presentes na imagem, destacando as áreas de alta e baixa frequência.
+Este script calcula a magnitude do espectro de frequência de uma imagem usando a Transformada de Fourier. Ele permite visualizar as diferentes frequências presentes na imagem, destacando as áreas de alta e baixa frequência.
 
 ### `fft_filters.py`
 
@@ -26,7 +26,11 @@ Este script ilustra como comprimir uma imagem usando a técnica de compressão b
 
 ### `fft_utils.py`
 
-Este arquivo contém funções utilitárias para calcular a FFT de uma imagem, obter o espectro de magnitude e reconstruir a imagem a partir da FFT.
+Este arquivo contém funções utilitárias para calcular a FFT de uma imagem, obter o espectro de frequência e reconstruir a imagem a partir da FFT.
+
+### `histogram.py`
+
+Este script gera o histrograma de uma imagem em tons de cinza.
 
 ## Execução dos Scripts
 
@@ -73,6 +77,24 @@ Exemplo:
 
 ```bash
 python fft_mag_spec.py input_image.jpg output_image_mag_spec.png
+   ```
+
+-------
+
+### `histogram.py`
+Para executar o script `histogram.py`, utilize o seguinte comando no terminal:
+
+```bash
+python histogram.py <caminho_para_imagem_entrada> <caminho_para_imagem_saida>
+```
+
+- `<caminho_para_imagem_entrada>`: Forneça o caminho para a imagem de entrada.
+- `<caminho_para_imagem_saida>`: Especifique o caminho para salvar a imagem de saída.
+
+Exemplo:
+
+```bash
+python histogram.py input_image.jpg output_image_mag_spec.png
    ```
 
 ------
