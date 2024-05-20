@@ -67,6 +67,21 @@ def find_main_lines(image):
         lines = detected_lines
     return lines
 
+def print_output_message(input_image_path, output_image_path, best_angle):
+    """
+    Print an output message explaining where the file was saved,
+    the input image path, the best rotation angle, and the heuristic used to obtain it.
+    
+    Args:
+        input_image_path (str): Path to the input image.
+        output_image_path (str): Path to the saved output image.
+        best_angle (int): Best rotation angle.
+    """
+    print(f"Input image: '{input_image_path}'")
+    print(f"Output image saved as '{output_image_path}'.")
+    print(f"Best rotation angle: {best_angle} degrees")
+    print("Heuristic used: Maximization of the difference of squared row sums.")
+
 def main(argv):
     """
     Main function to process input arguments and perform image processing tasks.
@@ -77,18 +92,12 @@ def main(argv):
     draw_lines_flag = False
 
     opts, args = getopt(argv, "pd", ["plot", "draw-lines"])
-    for opt, arg in opts:
+    for opt, _ in opts:
         if opt in ("-p", "--plot"):
             plot_flag = True
         elif opt in ("-d", "--draw-lines"):
             draw_lines_flag = True
 
-    input_image_path = args[0]
-    output_image_path = args[1]
-
-
-    input_image_path = args[0]
-    output_image_path = args[1]
     input_image_path = args[0]
     output_image_path = args[1]
 
@@ -98,11 +107,11 @@ def main(argv):
     # Find main lines using Hough transform
     detected_lines = find_main_lines(image)
     
-    # Draw detected lines on the input image
-    image_with_lines = draw_detected_lines(image, detected_lines)
-    
     # Calculate the best rotation angle based on detected lines
     best_rotation_angle = calculate_mean_angle(detected_lines) - 90
+
+    # Draw detected lines on the input image
+    image_with_lines = draw_detected_lines(image, detected_lines) if draw_lines_flag else None
     
     # Rotate the image using the calculated angle
     rotated_image = ut.rotate_image(image, best_rotation_angle)
