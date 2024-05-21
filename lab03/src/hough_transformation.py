@@ -80,7 +80,7 @@ def print_output_message(input_image_path, output_image_path, best_angle):
     print(f"Input image: '{input_image_path}'")
     print(f"Output image saved as '{output_image_path}'.")
     print(f"Best rotation angle: {best_angle} degrees")
-    print("Heuristic used: Maximization of the difference of squared row sums.")
+    print("Heuristic used: Mean angle of detected lines through hough transformation.")
 
 def main(argv):
     """
@@ -99,11 +99,14 @@ def main(argv):
             draw_lines_flag = True
 
     input_image_path = args[0]
+    input_file_name = os.path.basename(input_image_path).split(".")[0]
     output_image_path = args[1]
+    output_dir = os.path.dirname(output_image_path)
 
     # Read input image
     image = cv.imread(input_image_path, cv.IMREAD_GRAYSCALE)
-    
+    assert image is not None, f"Error: Could not read image '{input_image_path}'"
+
     # Find main lines using Hough transform
     detected_lines = find_main_lines(image)
     
@@ -119,8 +122,7 @@ def main(argv):
     # Write images to files
     cv.imwrite(output_image_path, rotated_image)
     if draw_lines_flag:
-        file_name = f'{os.path.basename(input_image_path).split(".")[0]}_with_lines.png'
-        cv.imwrite(file_name, image_with_lines)
+        cv.imwrite(f'{output_dir}/{input_file_name}_with_lines.png', image_with_lines)
 
     # If plot flag is set, display original image, image with detected lines, and rotated image
     if plot_flag:

@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import alignmnet_utils as ut
 import sys
+import os
 from getopt import getopt
 
 def objective_function(img, i):
@@ -30,25 +31,25 @@ def find_best_rotation_angle(img):
     Returns:
         int: Best rotation angle.
     """
-    angles = np.fromiter([objective_function(img, i) for i in range(0, 180, 1)], dtype=np.int64)
-    best_index = np.where(angles == np.max(angles))[0][0]
-    print(np.where(angles == np.max(angles)))
-    best_angle = best_index if best_index < 90 else best_index - 180 
+    angles = np.fromiter((objective_function(img, i) for i in range(0, 180, 1)), dtype=np.int64)
+    best_index = np.argmax(angles)
+    best_angle = best_index if best_index < 90 else best_index - 180
     return best_angle
 
-def save_histogram(image, filename):
+def make_line_histogram(image, filename):
     """
-    Save the histogram of the input image as a PDF file.
+    Save the line sum histogram of the image as a PDF file.
     
     Args:
         image (numpy.ndarray): Input image.
         filename (str): File name for saving the histogram.
     """
-    hist, bins = np.histogram(image.ravel(), bins=256, range=[0,256])
-    plt.plot(hist, color='black')
-    plt.xlabel('Pixel Intensity')
-    plt.ylabel('Frequency')
-    plt.title('Histogram')
+    rows_sum = np.sum(image, axis=1)
+    
+    plt.bar(np.arange(len(rows_sum)), rows_sum)
+    plt.xlabel('Image lines')
+    plt.ylabel('Pixel sum')
+    plt.title('Line Sum Histogram')
     plt.savefig(filename, format='pdf')
     plt.close()
 
@@ -72,8 +73,6 @@ def main(argv):
     """
     Main function to process input arguments and perform image rotation.
     """
-    input_image_path = None
-    output_image_path = None
     plot_flag = False
     histogram_flag = False
 
@@ -84,30 +83,44 @@ def main(argv):
         elif opt in ("-h", "--histogram"):
             histogram_flag = True
 
+    if len(args) < 2:
+        print("Usage: script.py <input_image_path> <output_image_path> [-p | --plot] [-h | --histogram]")
+        sys.exit(2)
+
     input_image_path = args[0]
+    input_file_name = os.path.basename(input_image_path).split(".")[0]
     output_image_path = args[1]
+    output_file_name = os.path.basename(input_image_path).split(".")[0]
+    output_dir = os.path.dirname(output_image_path)
 
     # Read input image
     img = cv.imread(input_image_path, cv.IMREAD_GRAYSCALE)
-    
+    assert img is not None, f"Error: Could not read image '{input_image_path}'"
+    bitwise_img = cv.bitwise_not(img)
+
     # Find the best rotation angle
-    best_angle = find_best_rotation_angle(img)
+    best_angle = find_best_rotation_angle(bitwise_img)
     
     # Rotate the image using the best angle
     rotated_image = ut.rotate_image(img, best_angle)
-    
-    # If histogram flag is set, save histograms
-    if histogram_flag:
-        save_histogram(img, "original_histogram.pdf")
-        save_histogram(rotated_image, "rotated_histogram.pdf")
+    bitwise_rotated = ut.rotate_image(bitwise_img, best_angle)
     
     # If plot flag is set, display original and rotated images
     if plot_flag:
-        plt.subplot(1, 2, 1), plt.imshow(img, cmap='gray')
-        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-        plt.subplot(1, 2, 2), plt.imshow(rotated_image, cmap='gray')
-        plt.title(f'Rotated Image ({best_angle} Degrees)'), plt.xticks([]), plt.yticks([])
+        plt.subplot(1, 2, 1)
+        plt.imshow(img, cmap='gray')
+        plt.title('Original Image')
+        plt.xticks([]), plt.yticks([])
+        plt.subplot(1, 2, 2)
+        plt.imshow(rotated_image, cmap='gray')
+        plt.title(f'Rotated Image ({best_angle} Degrees)')
+        plt.xticks([]), plt.yticks([])
         plt.show()
+
+    # If histogram flag is set, save histograms
+    if histogram_flag:
+        make_line_histogram(bitwise_img, f'{output_dir}/{input_file_name}_hist.pdf')
+        make_line_histogram(bitwise_rotated, f'{output_dir}/{output_file_name}_hist.pdf')
 
     # Save the rotated image
     cv.imwrite(output_image_path, rotated_image)
