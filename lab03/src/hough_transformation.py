@@ -47,22 +47,6 @@ def objective_function(image):
     lines = cv.HoughLines(edges, 1, np.pi / 180, 0)
     return lines[np.argmax(lines[:1])]
     
-def print_output_message(input_image_path, output_image_path, best_angle):
-    """
-    Print an output message explaining where the file was saved,
-    the input image path, the best rotation angle, and the heuristic used to obtain it.
-    
-    Args:
-        input_image_path (str): Path to the input image.
-        output_image_path (str): Path to the saved output image.
-        best_angle (int): Best rotation angle.
-    """
-    print()
-    print(f"Input image: '{input_image_path}'")
-    print(f"Output image saved as '{output_image_path}'.")
-    print(f"Best rotation angle: {best_angle} degrees")
-    print("Heuristic used: Mean angle of detected lines through hough transformation.")
-
 def main(argv):
     """
     Main function to process input arguments and perform image processing tasks.
@@ -89,13 +73,13 @@ def main(argv):
     assert image is not None, f"Error: Could not read image '{input_image_path}'"
     gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    # Find main lines using Hough transform
+    # Find main line using Hough transform
     detected_line = objective_function(gray_image)
     
-    # Calculate the best rotation angle based on detected lines
+    # Calculate the best rotation angle based on detected line
     best_rotation_angle = np.rad2deg(detected_line[0][1]) - 90
 
-    # Draw detected lines on the input image
+    # Draw detected line on the input image
     image_with_lines = draw_detected_lines(image, detected_line) if draw_lines_flag else None
     
     # Rotate the image using the calculated angle
@@ -106,7 +90,7 @@ def main(argv):
     if draw_lines_flag:
         cv.imwrite(f'{output_dir}/{input_file_name}_with_lines.png', image_with_lines)
 
-    # If plot flag is set, display original image, image with detected lines, and rotated image
+    # If plot flag is set, display original image, image with detected line, and rotated image
     if plot_flag:
         to_plot = [
             ['Original Image', image],
@@ -121,7 +105,9 @@ def main(argv):
             plt.title(to_plot[i - 1][0]), plt.xticks([]), plt.yticks([])
         plt.show()
 
-    print_output_message(input_image_path, output_image_path, best_rotation_angle)
+    ut.print_output_message(input_image_path, output_image_path, 
+                         best_rotation_angle, "Mean angle of detected lines through hough transformation.")
 
+    ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{input_file_name}_ocr.txt')
 if __name__ == '__main__':
     main(sys.argv[1:])

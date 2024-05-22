@@ -31,7 +31,7 @@ def find_best_rotation_angle(img):
     Returns:
         int: Best rotation angle.
     """
-    angles = np.fromiter((objective_function(img, i) for i in range(0, 180, 1)), dtype=np.int64)
+    angles = np.fromiter((objective_function(img, i) for i in range(0, 181, 1)), dtype=np.int64)
     best_index = np.argmax(angles)
     best_angle = best_index if best_index < 90 else best_index - 180
     return best_angle
@@ -53,21 +53,6 @@ def make_line_histogram(image, filename):
     plt.savefig(filename, format='pdf')
     plt.close()
 
-def print_output_message(input_image_path, output_image_path, best_angle):
-    """
-    Print an output message explaining where the file was saved,
-    the input image path, the best rotation angle, and the heuristic used to obtain it.
-    
-    Args:
-        input_image_path (str): Path to the input image.
-        output_image_path (str): Path to the saved output image.
-        best_angle (int): Best rotation angle.
-    """
-    print()
-    print(f"Input image: '{input_image_path}'")
-    print(f"Output image saved as '{output_image_path}'.")
-    print(f"Best rotation angle: {best_angle} degrees")
-    print("Heuristic used: Maximization of the difference of squared row sums.")
 
 def main(argv):
     """
@@ -96,15 +81,14 @@ def main(argv):
     # Read input image
     img = cv.imread(input_image_path, cv.IMREAD_GRAYSCALE)
     assert img is not None, f"Error: Could not read image '{input_image_path}'"
-    r, bitwise_img = cv.threshold(img,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
-
+    bitwised_img = cv.bitwise_not(img) # Invert bits
+    _, binirized_img = cv.threshold(bitwised_img,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
 
     # Find the best rotation angle
-    best_angle = find_best_rotation_angle(bitwise_img)
+    best_angle = find_best_rotation_angle(binirized_img)
     
     # Rotate the image using the best angle
     rotated_image = ut.rotate_image(img, best_angle)
-    bitwise_rotated = ut.rotate_image(bitwise_img, best_angle)
     
     # If plot flag is set, display original and rotated images
     if plot_flag:
@@ -120,13 +104,17 @@ def main(argv):
 
     # If histogram flag is set, save histograms
     if histogram_flag:
-        make_line_histogram(bitwise_rotated, f'{output_dir}/{output_file_name}_hist.pdf')
-        make_line_histogram(bitwise_img, f'{output_dir}/{input_file_name}_hist.pdf')
+        binirized_rotated_img = ut.rotate_image(binirized_img, best_angle)
+        make_line_histogram(binirized_rotated_img, f'{output_dir}/{output_file_name}_hist.pdf')
+        make_line_histogram(binirized_img, f'{output_dir}/{input_file_name}_hist.pdf')
+    
     # Save the rotated image
     cv.imwrite(output_image_path, rotated_image)
 
     # Print output message
-    print_output_message(input_image_path, output_image_path, best_angle)
-
+    ut.print_output_message(input_image_path, output_image_path, 
+                         best_angle, "Maximization of the difference of squared row sums.")
+    
+    ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{input_file_name}_ocr.txt')
 if __name__ == "__main__":
     main(sys.argv[1:])

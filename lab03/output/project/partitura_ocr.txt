@@ -1,0 +1,6 @@
+Input OCR:
+> 
+Output OCR:
+> 
+Difference:
+  > 

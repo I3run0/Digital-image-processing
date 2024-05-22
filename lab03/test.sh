@@ -52,7 +52,7 @@ for IMAGE_PATH in "$INPUT_DIR"/*.{png,jpg,jpeg}; do
         # Get the base name of the image file (without the extension)
         IMAGE_NAME=$(basename "$IMAGE_PATH")
         IMAGE_NAME="${IMAGE_NAME%.*}"
-        
+        echo 
         # Define the output image path based on the method
         if [ "$METHOD" == "HP" ]; then
             OUTPUT_IMAGE_PATH="$OUTPUT_DIR/${IMAGE_NAME}_rotated_hp.png"

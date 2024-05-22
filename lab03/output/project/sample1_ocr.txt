@@ -1,0 +1,22 @@
+Input OCR:
+> 
+Output OCR:
+> AUNQUE
+> GMSE Imaging
+> wing an image can help a lot, if
+> nt to do OCR, OMR, barcode
+> improve the
+> 
+> ability of scanned i -_
+> 
+> 
+Difference:
++ > AUNQUE
++ > GMSE Imaging
++ > wing an image can help a lot, if
++ > nt to do OCR, OMR, barcode
++ > improve the
++ > 
++ > ability of scanned i -_
++ > 
+  > 
