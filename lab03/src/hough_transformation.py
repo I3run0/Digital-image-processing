@@ -19,7 +19,7 @@ def draw_detected_lines(image, lines):
     """
     image_with_lines = np.copy(image)
     for line in lines:
-        rho, theta = line[0]
+        rho, theta = line
         # Convert polar coordinates to Cartesian coordinates
         cos_theta = np.cos(theta)
         sin_theta = np.sin(theta)
@@ -33,20 +33,7 @@ def draw_detected_lines(image, lines):
         cv.line(image_with_lines, (x1, y1), (x2, y2), (0, 0, 255), 2)
     return image_with_lines
 
-def calculate_mean_angle(lines):
-    """
-    Calculate the mean angle of detected lines.
-    
-    Args:
-        lines (numpy.ndarray): Array containing lines detected by Hough transform.
-        
-    Returns:
-        float: Mean angle in degrees.
-    """
-    total_angle = sum(np.rad2deg(line[0][1]) for line in lines)
-    return total_angle / len(lines)
-
-def find_main_lines(image):
+def objective_function(image):
     """
     Find main lines in the input image using Hough transform.
     
@@ -57,16 +44,9 @@ def find_main_lines(image):
         numpy.ndarray: Array containing detected lines.
     """
     edges = cv.Canny(image, 100, 100, apertureSize=3)
-    k = 0
-    lines = None
-    while True:
-        k += 1
-        detected_lines = cv.HoughLines(edges, 1, np.pi / 180, k)
-        if detected_lines is None:
-            break
-        lines = detected_lines
-    return lines
-
+    lines = cv.HoughLines(edges, 1, np.pi / 180, 0)
+    return lines[np.argmax(lines[:1])]
+    
 def print_output_message(input_image_path, output_image_path, best_angle):
     """
     Print an output message explaining where the file was saved,
@@ -77,6 +57,7 @@ def print_output_message(input_image_path, output_image_path, best_angle):
         output_image_path (str): Path to the saved output image.
         best_angle (int): Best rotation angle.
     """
+    print()
     print(f"Input image: '{input_image_path}'")
     print(f"Output image saved as '{output_image_path}'.")
     print(f"Best rotation angle: {best_angle} degrees")
@@ -104,17 +85,18 @@ def main(argv):
     output_dir = os.path.dirname(output_image_path)
 
     # Read input image
-    image = cv.imread(input_image_path, cv.IMREAD_GRAYSCALE)
+    image = cv.imread(input_image_path)
     assert image is not None, f"Error: Could not read image '{input_image_path}'"
+    gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     # Find main lines using Hough transform
-    detected_lines = find_main_lines(image)
+    detected_line = objective_function(gray_image)
     
     # Calculate the best rotation angle based on detected lines
-    best_rotation_angle = calculate_mean_angle(detected_lines) - 90
+    best_rotation_angle = np.rad2deg(detected_line[0][1]) - 90
 
     # Draw detected lines on the input image
-    image_with_lines = draw_detected_lines(image, detected_lines) if draw_lines_flag else None
+    image_with_lines = draw_detected_lines(image, detected_line) if draw_lines_flag else None
     
     # Rotate the image using the calculated angle
     rotated_image = ut.rotate_image(image, best_rotation_angle)
@@ -138,6 +120,8 @@ def main(argv):
             plt.subplot(1, len(to_plot), i), plt.imshow(to_plot[i - 1][1], cmap='gray')
             plt.title(to_plot[i - 1][0]), plt.xticks([]), plt.yticks([])
         plt.show()
+
+    print_output_message(input_image_path, output_image_path, best_rotation_angle)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -90,13 +90,14 @@ def main(argv):
     input_image_path = args[0]
     input_file_name = os.path.basename(input_image_path).split(".")[0]
     output_image_path = args[1]
-    output_file_name = os.path.basename(input_image_path).split(".")[0]
+    output_file_name = os.path.basename(output_image_path).split(".")[0]
     output_dir = os.path.dirname(output_image_path)
 
     # Read input image
     img = cv.imread(input_image_path, cv.IMREAD_GRAYSCALE)
     assert img is not None, f"Error: Could not read image '{input_image_path}'"
-    bitwise_img = cv.bitwise_not(img)
+    r, bitwise_img = cv.threshold(img,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+
 
     # Find the best rotation angle
     best_angle = find_best_rotation_angle(bitwise_img)
@@ -119,9 +120,8 @@ def main(argv):
 
     # If histogram flag is set, save histograms
     if histogram_flag:
-        make_line_histogram(bitwise_img, f'{output_dir}/{input_file_name}_hist.pdf')
         make_line_histogram(bitwise_rotated, f'{output_dir}/{output_file_name}_hist.pdf')
-
+        make_line_histogram(bitwise_img, f'{output_dir}/{input_file_name}_hist.pdf')
     # Save the rotated image
     cv.imwrite(output_image_path, rotated_image)
 
