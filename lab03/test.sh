@@ -56,10 +56,10 @@ for IMAGE_PATH in "$INPUT_DIR"/*.{png,jpg,jpeg}; do
         # Define the output image path based on the method
         if [ "$METHOD" == "HP" ]; then
             OUTPUT_IMAGE_PATH="$OUTPUT_DIR/${IMAGE_NAME}_rotated_hp.png"
-            python3 src/horizontal_projection.py --histogram "$IMAGE_PATH" "$OUTPUT_IMAGE_PATH"
+            python3 src/horizontal_projection.py --histogram --ocr "$IMAGE_PATH" "$OUTPUT_IMAGE_PATH"
         elif [ "$METHOD" == "HL" ]; then
             OUTPUT_IMAGE_PATH="$OUTPUT_DIR/${IMAGE_NAME}_rotated_hl.png"
-            python3 src/hough_transformation.py --draw-lines "$IMAGE_PATH" "$OUTPUT_IMAGE_PATH"
+            python3 src/hough_transformation.py --draw-lines --ocr "$IMAGE_PATH" "$OUTPUT_IMAGE_PATH"
         fi
     fi
 done

@@ -1,0 +1,41 @@
+Input OCR:
+> Our last argument is how we want to approximate the
+> contour. We use v2. CHAIN_APPROX_SIMPLE to compress
+> horizontal, vertical, and diagonal segments into their end-
+> points only. This saves both computation and memory. If
+> we wanted all the points along the contour, without com-
+> pression, we can pass in ¢v2.CHAIN_APPROX_NONE; however,
+> be very sparing when using this function. Retrieving all
+> points along a contour is often ‘unnecessary and is wasteful
+> of resources.
+> 
+Output OCR:
+> Our last argument is how we want to approximate the
+> contour. We use cv2.CHAIN_APPROX_SIMPLE to compress
+> horizontal, vertical, and diagonal segments into their end-
+> points only. This saves both computation and memory. If
+> we wanted all the points along the contour, without com-
+> pression, we can pass in cv2.CHAIN_APPROX_NONE; however,
+> be very sparing when using this function. Retrieving all
+> points along a contour is often unnecessary and is wasteful
+> of resources.
+> 
+Difference:
+  > Our last argument is how we want to approximate the
+- > contour. We use v2. CHAIN_APPROX_SIMPLE to compress
+?                      -
++ > contour. We use cv2.CHAIN_APPROX_SIMPLE to compress
+?                   +
+  > horizontal, vertical, and diagonal segments into their end-
+  > points only. This saves both computation and memory. If
+  > we wanted all the points along the contour, without com-
+- > pression, we can pass in ¢v2.CHAIN_APPROX_NONE; however,
+?                            ^
++ > pression, we can pass in cv2.CHAIN_APPROX_NONE; however,
+?                            ^
+  > be very sparing when using this function. Retrieving all
+- > points along a contour is often ‘unnecessary and is wasteful
+?                                   -
++ > points along a contour is often unnecessary and is wasteful
+  > of resources.
+  > 

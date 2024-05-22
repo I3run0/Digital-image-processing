@@ -60,13 +60,16 @@ def main(argv):
     """
     plot_flag = False
     histogram_flag = False
+    ocr_flag = False
 
-    opts, args = getopt(argv, "ph", ["plot", "histogram"])
+    opts, args = getopt(argv, "phc", ["plot", "histogram", "ocr"])
     for opt, _ in opts:
         if opt in ("-p", "--plot"):
             plot_flag = True
         elif opt in ("-h", "--histogram"):
             histogram_flag = True
+        elif opt in ("-c", "--ocr"):
+            ocr_flag = True
 
     if len(args) < 2:
         print("Usage: script.py <input_image_path> <output_image_path> [-p | --plot] [-h | --histogram]")
@@ -115,6 +118,8 @@ def main(argv):
     ut.print_output_message(input_image_path, output_image_path, 
                          best_angle, "Maximization of the difference of squared row sums.")
     
-    ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{input_file_name}_ocr.txt')
+    if ocr_flag:
+        ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{output_file_name}_ocr.txt')
+
 if __name__ == "__main__":
     main(sys.argv[1:])

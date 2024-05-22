@@ -55,17 +55,21 @@ def main(argv):
     output_image_path = None
     plot_flag = False
     draw_lines_flag = False
+    ocr_flag = False
 
-    opts, args = getopt(argv, "pd", ["plot", "draw-lines"])
+    opts, args = getopt(argv, "pdc", ["plot", "draw-lines", "ocr"])
     for opt, _ in opts:
         if opt in ("-p", "--plot"):
             plot_flag = True
         elif opt in ("-d", "--draw-lines"):
             draw_lines_flag = True
+        elif opt in ("-c", "--ocr"):
+            ocr_flag = True
 
     input_image_path = args[0]
     input_file_name = os.path.basename(input_image_path).split(".")[0]
     output_image_path = args[1]
+    output_file_name = os.path.basename(input_image_path).split(".")[0]
     output_dir = os.path.dirname(output_image_path)
 
     # Read input image
@@ -108,6 +112,8 @@ def main(argv):
     ut.print_output_message(input_image_path, output_image_path, 
                          best_rotation_angle, "Mean angle of detected lines through hough transformation.")
 
-    ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{input_file_name}_ocr.txt')
+    if ocr_flag:
+        ut.compare_ocr_tesseract(input_image_path, output_image_path, f'{output_dir}/{output_file_name}_ocr.txt')
+
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -1,0 +1,14 @@
+Input OCR:
+> 
+Output OCR:
+> Ue a
+> 
+> E Imaging
+> 
+> 
+Difference:
++ > Ue a
++ > 
++ > E Imaging
++ > 
+  > 
