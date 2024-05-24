@@ -3,7 +3,6 @@
 # Ensure the script stops if any command fails
 set -e
 
-# Function to display usage information
 usage() {
     echo "Usage: $0 -m <method> <input_dir> <output_dir>"
     echo "  -m <method>  : Method to use for alignment (HL for Hough Transformation, HP for Horizontal Projection)"
@@ -12,7 +11,6 @@ usage() {
     exit 1
 }
 
-# Parse command line arguments
 while getopts ":m:" opt; do
     case $opt in
         m)
@@ -24,7 +22,6 @@ while getopts ":m:" opt; do
     esac
 done
 
-# Shift parsed options away
 shift $((OPTIND -1))
 
 # Check if correct number of arguments is provided
@@ -32,7 +29,6 @@ if [ "$#" -ne 2 ]; then
     usage
 fi
 
-# Get input and output directories from arguments
 INPUT_DIR=$1
 OUTPUT_DIR=$2
 
@@ -47,13 +43,10 @@ mkdir -p "$OUTPUT_DIR"
 
 # Iterate over all image files in the input directory
 for IMAGE_PATH in "$INPUT_DIR"/*.{png,jpg,jpeg}; do
-    # Check if the file exists (in case no files match the pattern)
     if [ -e "$IMAGE_PATH" ]; then
-        # Get the base name of the image file (without the extension)
         IMAGE_NAME=$(basename "$IMAGE_PATH")
         IMAGE_NAME="${IMAGE_NAME%.*}"
         echo 
-        # Define the output image path based on the method
         if [ "$METHOD" == "HP" ]; then
             OUTPUT_IMAGE_PATH="$OUTPUT_DIR/${IMAGE_NAME}_rotated_hp.png"
             python3 src/horizontal_projection.py --histogram --ocr "$IMAGE_PATH" "$OUTPUT_IMAGE_PATH"

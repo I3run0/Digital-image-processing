@@ -35,16 +35,18 @@ def compare_ocr_tesseract(input_image_path, output_image_path, path_to_save = No
     """
     # Perform OCR using Tesseract on the input image
     input_ocr = ocr.image_to_string(cv.imread(input_image_path))
-    input_ocr = '> ' + input_ocr.replace('\n', '\n> ')
 
     # Perform OCR using Tesseract on the output image
     output_ocr = ocr.image_to_string(cv.imread(output_image_path))
-    output_ocr = '> ' + output_ocr.replace('\n', '\n> ')
+
 
     # Compute the difference between the OCR texts
     df = diff.ndiff(input_ocr.splitlines(keepends=True), output_ocr.splitlines(keepends=True))
     diff_text = ''.join(df)
-    
+
+    input_ocr = '> ' + input_ocr.replace('\n', '\n> ')
+    output_ocr = '> ' + output_ocr.replace('\n', '\n> ')
+        
     print("********************* OCR Comparison ************************")
     print("Input OCR:")
     print(input_ocr)
