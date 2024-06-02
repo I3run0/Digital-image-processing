@@ -35,7 +35,7 @@ def draw_detected_lines(image, lines):
 
 def objective_function(image):
     """
-    Find main lines in the input image using Hough transform.
+    Find main line in the input image using Hough transform.
     
     Args:
         image (numpy.ndarray): Input image.
@@ -45,7 +45,7 @@ def objective_function(image):
     """
     edges = cv.Canny(image, 100, 100, apertureSize=3)
     lines = cv.HoughLines(edges, 1, np.pi / 180, 0)
-    return lines[np.argmax(lines[:1])]
+    return lines[np.argmax(lines[:1])[0]]
     
 def main(argv):
     """
@@ -69,7 +69,7 @@ def main(argv):
     input_image_path = args[0]
     input_file_name = os.path.basename(input_image_path).split(".")[0]
     output_image_path = args[1]
-    output_file_name = os.path.basename(input_image_path).split(".")[0]
+    output_file_name = os.path.basename(output_image_path).split(".")[0]
     output_dir = os.path.dirname(output_image_path)
 
     # Read input image
@@ -82,17 +82,22 @@ def main(argv):
     
     # Calculate the best rotation angle based on detected line
     best_rotation_angle = np.rad2deg(detected_line[0][1]) - 90
-
-    # Draw detected line on the input image
-    image_with_lines = draw_detected_lines(image, detected_line) if draw_lines_flag else None
     
     # Rotate the image using the calculated angle
     rotated_image = ut.rotate_image(image, best_rotation_angle)
 
     # Write images to files
     cv.imwrite(output_image_path, rotated_image)
+    
+    # Draw detected line on the input image
+    input_image_with_lines = None
+    output_image_with_lines =  None
+
     if draw_lines_flag:
-        cv.imwrite(f'{output_dir}/{input_file_name}_with_lines.png', image_with_lines)
+        input_image_with_lines = draw_detected_lines(image, detected_line)
+        output_image_with_lines = ut.rotate_image(input_image_with_lines, best_rotation_angle) 
+        cv.imwrite(f'{output_dir}/{input_file_name}_with_lines.png', input_image_with_lines)
+        cv.imwrite(f'{output_dir}/{output_file_name}_with_lines.png', output_image_with_lines)
 
     # If plot flag is set, display original image, image with detected line, and rotated image
     if plot_flag:
@@ -102,8 +107,11 @@ def main(argv):
         ]
 
         if draw_lines_flag:
-            to_plot.append(['Detected Lines', image_with_lines])
-
+            to_plot += [
+                ['Detected Line in Input Image', input_image_with_lines],
+                ['Detected Line in Outpu Image', output_image_with_lines]
+            ]
+    
         for i in range(1, len(to_plot) + 1):
             plt.subplot(1, len(to_plot), i), plt.imshow(to_plot[i - 1][1], cmap='gray')
             plt.title(to_plot[i - 1][0]), plt.xticks([]), plt.yticks([])
