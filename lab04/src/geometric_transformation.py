@@ -147,8 +147,8 @@ def bilinear_interpolation(image: np.ndarray, x: np.ndarray, y: np.ndarray) -> n
     - result: Interpolated image values
     """
     original_height, original_width = image.shape[:2]
-    x1 = np.floor(x).astype(int)
-    y1 = np.floor(y).astype(int)
+    x1 = np.clip(np.floor(x).astype(int), 0, original_width - 1)
+    y1 = np.clip(np.floor(y).astype(int), 0, original_height - 1)
     x2 = np.clip(x1 + 1, 0, original_width - 1)
     y2 = np.clip(y1 + 1, 0, original_height - 1)
     x_frac = x - x1
