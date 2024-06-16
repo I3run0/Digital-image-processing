@@ -1,6 +1,6 @@
 import numpy as np
+import argparse
 import cv2 as cv
-from getopt import getopt
 import sys
 
 # Helper functions
@@ -248,128 +248,66 @@ def apply_rotation(image: np.ndarray, angle: float, interpolation_func) -> np.nd
 
     return rotated_image
 
-# Functions to apply the interpolation logic in scaling and rotation transformations
-def rescale_and_rotate_image_lagrange(image: np.ndarray, scale_x: float, scale_y: float, angle: float) -> np.ndarray:
-    """
-    Rescale and rotate the image using Lagrange interpolation.
+# Main function logic
+INTERPOLATION_METHODS = {
+    'nearest': nearest_neighbor,
+    'bilinear': bilinear_interpolation,
+    'bicubic': bicubic_interpolation,
+    'lagrange': lagrange_interpolation
+}
 
-    Parameters:
-    - image: Input image
-    - scale_x: Scaling factor for the width
-    - scale_y: Scaling factor for the height
-    - angle: Angle to rotate the image (in radians)
-    
-    Returns:
-    - Transformed image
+def main() -> None:
     """
-    scaled_image = apply_scaling(image, scale_x, scale_y, lagrange_interpolation)
-    rotated_image = apply_rotation(scaled_image, angle, lagrange_interpolation)
-    return rotated_image
-
-def rescale_and_rotate_image_bilinear(image: np.ndarray, scale_x: float, scale_y: float, angle: float) -> np.ndarray:
-    """
-    Rescale and rotate the image using bilinear interpolation.
-
-    Parameters:
-    - image: Input image
-    - scale_x: Scaling factor for the width
-    - scale_y: Scaling factor for the height
-    - angle: Angle to rotate the image (in radians)
-    
-    Returns:
-    - Transformed image
-    """
-    scaled_image = apply_scaling(image, scale_x, scale_y, bilinear_interpolation)
-    rotated_image = apply_rotation(scaled_image, angle, bilinear_interpolation)
-    return rotated_image
-
-def rescale_and_rotate_image_nearest_neighbor(image: np.ndarray, scale_x: float, scale_y: float, angle: float) -> np.ndarray:
-    """
-    Rescale and rotate the image using nearest neighbor interpolation.
-
-    Parameters:
-    - image: Input image
-    - scale_x: Scaling factor for the width
-    - scale_y: Scaling factor for the height
-    - angle: Angle to rotate the image (in radians)
-    
-    Returns:
-    - Transformed image
-    """
-    scaled_image = apply_scaling(image, scale_x, scale_y, nearest_neighbor)
-    rotated_image = apply_rotation(scaled_image, angle, nearest_neighbor)
-    return rotated_image
-
-def rescale_and_rotate_image_bicubic(image: np.ndarray, scale_x: float, scale_y: float, angle: float) -> np.ndarray:
-    """
-    Rescale and rotate the image using bicubic interpolation.
-
-    Parameters:
-    - image: Input image
-    - scale_x: Scaling factor for the width
-    - scale_y: Scaling factor for the height
-    - angle: Angle to rotate the image (in radians)
-    
-    Returns:
-    - Transformed image
-    """
-    scaled_image = apply_scaling(image, scale_x, scale_y, bicubic_interpolation)
-    rotated_image = apply_rotation(scaled_image, angle, bicubic_interpolation)
-    return rotated_image
-
-# Main function to handle command-line arguments and perform image scaling and rotation
-def main(argv: list) -> None:
-    """
-    Main function to handle command-line arguments and perform image scaling and rotation.
+    Main function to handle command-line arguments and perform image scaling or rotation.
 
     Parameters:
     - argv: List of command-line arguments
     """
-    angle: float = 0  # Default angle
-    scale_factor: float = 1.0  # Default scale factor
-    interpolation_method: str = 'nearest'  # Default interpolation method
+    parser = argparse.ArgumentParser(description="Image scaling and rotation script")
+    subparsers = parser.add_subparsers(dest="command")
 
-    # Parse command-line arguments
-    opts, args = getopt(argv, "a:s:m:", ["angle=", "scale-factor=", "method="])
-    
-    for opt, arg in opts:
-        if opt in ("-a", "--angle"):
-            angle = float(arg)
-        elif opt in ("-s", "--scale-factor"):
-            scale_factor = float(arg)
-        elif opt in ("-m", "--method"):
-            interpolation_method = arg.lower()
+    # Rotate command
+    parser_rotate = subparsers.add_parser("rotate", help="Rotate an image")
+    parser_rotate.add_argument("input_image_path", type=str, help="Input image path")
+    parser_rotate.add_argument("output_image_path", type=str, help="Output image path")
+    parser_rotate.add_argument("-a", "--angle", type=float, default=0, help="Angle to rotate (in degrees)")
+    parser_rotate.add_argument("-m", "--method", type=str, choices=INTERPOLATION_METHODS.keys(), default='nearest', help="Interpolation method")
 
-    if len(args) < 2:
-        print("Usage: script.py <input_image_path> <output_image_path> [-a | --angle] [-s | --scale-factor] [-m | --method]")
-        sys.exit(2) 
+    # Scale command
+    parser_scale = subparsers.add_parser("scale", help="Scale an image")
+    parser_scale.add_argument("input_image_path", type=str, help="Input image path")
+    parser_scale.add_argument("output_image_path", type=str, help="Output image path")
+    parser_scale.add_argument("-s", "--scale-factor", type=float, default=1.0, help="Scaling factor")
+    parser_scale.add_argument("-wh", "--width-height", type=int, nargs=2, default=None, help="Width and height")
+    parser_scale.add_argument("-m", "--method", type=str, choices=INTERPOLATION_METHODS.keys(), default='nearest', help="Interpolation method")
 
-    input_image_path: str = args[0]
-    output_image_path: str = args[1]
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
 
     # Read the input image
-    image: np.ndarray = cv.imread(input_image_path)
-    if image is None:
-        print(f"Error: Could not open or find the image '{input_image_path}'")
+    input_image: np.ndarray = cv.imread(args.input_image_path)
+    if input_image is None:
+        print(f"Error: Could not open or find the image '{args.input_image_path}'")
         sys.exit(2)
 
-    # Select the interpolation method and apply transformations
-    if interpolation_method == 'nearest':
-        rescaled_image: np.ndarray = rescale_and_rotate_image_nearest_neighbor(image, scale_factor, scale_factor, np.radians(angle))
-    elif interpolation_method == 'bilinear':
-        rescaled_image: np.ndarray = rescale_and_rotate_image_bilinear(image, scale_factor, scale_factor, np.radians(angle))
-    elif interpolation_method == 'bicubic':
-        rescaled_image: np.ndarray = rescale_and_rotate_image_bicubic(image, scale_factor, scale_factor, np.radians(angle))
-    elif interpolation_method == 'lagrange':
-        rescaled_image: np.ndarray = rescale_and_rotate_image_lagrange(image, scale_factor, scale_factor, np.radians(angle))
+    output_image: np.ndarray = None
+    if args.command == "rotate":
+        angle = np.radians(args.angle)
+        output_image = apply_rotation(image=input_image, angle=angle, interpolation_func=INTERPOLATION_METHODS[args.method])
+    elif args.command == "scale":
+        scale_x, scale_y =  (args.width_height[0]/input_image.shape[0], args.width_height[1]/input_image.shape[1]) if args.width_height\
+              else (args.scale_factor, args.scale_factor)
+        output_image = apply_scaling(image=input_image, scale_x=scale_x, scale_y=scale_y, interpolation_func=INTERPOLATION_METHODS[args.method])
     else:
-        print(f"Error: Unknown interpolation method '{interpolation_method}'")
-        print("Available methods: nearest, bilinear, bicubic, lagrange")
+        parser.print_help()
         sys.exit(2)
 
     # Save the output image
-    cv.imwrite(output_image_path, rescaled_image)
-    print(f"Output image saved as '{output_image_path}'")
+    cv.imwrite(args.output_image_path, output_image)
+    print(f"Output image saved as '{args.output_image_path}'")
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
