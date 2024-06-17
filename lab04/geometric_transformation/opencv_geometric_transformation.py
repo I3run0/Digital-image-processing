@@ -90,11 +90,11 @@ def main() -> None:
     output_image: np.ndarray = None
     if args.command == "rotate":
         angle = np.radians(args.angle)
-        output_image = apply_rotation_opencv(image=input_image, angle=angle, interpolation=INTERPOLATION_METHODS_OPENCV[args.method])
+        output_image = apply_rotation_opencv(image=input_image, angle=angle, interpolation_method=INTERPOLATION_METHODS_OPENCV[args.method])
     elif args.command == "scale":
         scale_x, scale_y =  (args.width_height[0]/input_image.shape[0], args.width_height[1]/input_image.shape[1]) if args.width_height\
               else (args.scale_factor, args.scale_factor)
-        output_image = apply_scaling_opencv(image=input_image, scale_x=scale_x, scale_y=scale_y, interpolation=INTERPOLATION_METHODS_OPENCV[args.method])
+        output_image = apply_scaling_opencv(image=input_image, scale_x=scale_x, scale_y=scale_y, interpolation_method=INTERPOLATION_METHODS_OPENCV[args.method])
     else:
         parser.print_help()
         sys.exit(2)
