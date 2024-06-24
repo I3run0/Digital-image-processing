@@ -256,13 +256,7 @@ INTERPOLATION_METHODS = {
     'lagrange': lagrange_interpolation
 }
 
-def main() -> None:
-    """
-    Main function to handle command-line arguments and perform image scaling or rotation.
-
-    Parameters:
-    - argv: List of command-line arguments
-    """
+def parse_arguments():
     parser = argparse.ArgumentParser(description="Image scaling and rotation script")
     subparsers = parser.add_subparsers(dest="command")
 
@@ -281,7 +275,16 @@ def main() -> None:
     parser_scale.add_argument("-wh", "--width-height", type=int, nargs=2, default=None, help="Width and height")
     parser_scale.add_argument("-m", "--method", type=str, choices=INTERPOLATION_METHODS.keys(), default='nearest', help="Interpolation method")
 
-    args = parser.parse_args()
+    return parser, parser.parse_args()
+
+def main() -> None:
+    """
+    Main function to handle command-line arguments and perform image scaling or rotation.
+
+    Parameters:
+    - argv: List of command-line arguments
+    """
+    parser, args = parse_arguments()
 
     if args.command is None:
         parser.print_help()
