@@ -38,7 +38,7 @@ def apply_rotation_opencv(image: np.ndarray, angle: float, interpolation_method:
     """
     height, width = image.shape[:2]
     center = (width // 2, height // 2)  # Calculate the center of the image for rotation
-    rotation_matrix = cv.getRotationMatrix2D(center, np.degrees(angle), 1.0)  # Get the rotation matrix
+    rotation_matrix = cv.getRotationMatrix2D(center, np.degrees(-1 * angle), 1.0)  # Get the rotation matrix
     rotated_image = cv.warpAffine(image, rotation_matrix, (width, height), flags=interpolation_method)  # Rotate the image
     return rotated_image
 
@@ -47,7 +47,7 @@ INTERPOLATION_METHODS_OPENCV = {
     'nearest': cv.INTER_NEAREST,
     'bilinear': cv.INTER_LINEAR,
     'bicubic': cv.INTER_CUBIC,
-    'lanczos': cv.INTER_LANCZOS4
+    'lagrange': cv.INTER_LANCZOS4
 }
 
 def main() -> None:

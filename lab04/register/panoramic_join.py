@@ -3,18 +3,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-def detect_and_compute_surf(gray):
+def detect_and_compute_sift(gray):
     """
-    Detect keypoints and compute descriptors using SURF.
+    Detect keypoints and compute descriptors using SIFT.
     
     Parameters:
     gray (numpy.ndarray): Grayscale image.
     
     Returns:
-    tuple: keypoints and descriptors detected by SURF.
+    tuple: keypoints and descriptors detected by SIFT.
     """
-    detector = cv.xfeatures2d.SURF_create()
-    keypoints, descriptors = detector.detectAndCompute(gray, None)
+    sift = cv.SIFT_create(contrastThreshold=0.01)
+    keypoints, descriptors = sift.detectAndCompute(gray, None)
     return keypoints, descriptors
 
 def detect_and_compute_orb(gray):
@@ -41,14 +41,14 @@ def detect_and_compute_brief(gray):
     Returns:
     tuple: keypoints and descriptors detected by BRIEF.
     """
-    fast = cv.FastFeatureDetector_create()
+    fast = cv.FastFeatureDetector_create(threshold=80, nonmaxSuppression=True)
     keypoints = fast.detect(gray, None)
-    brief = cv.xfeatures2d.BriefDescriptorExtractor_create()
+    brief = cv.xfeatures2d.BriefDescriptorExtractor_create(use_orientation=True)
     keypoints, descriptors = brief.compute(gray, keypoints)
     return keypoints, descriptors
 
 KEYPOINT_DETECTOR = {
-    'SURF': detect_and_compute_surf,
+    'SIFT': detect_and_compute_sift,
     'ORB': detect_and_compute_orb,
     'BRIEF': detect_and_compute_brief
 }
@@ -114,7 +114,7 @@ def estimate_homography(keypoints1, keypoints2, matches):
     """
     src_pts = np.float32([keypoints1[m.queryIdx].pt for m in matches]).reshape(-1, 2)
     dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in matches]).reshape(-1, 2)
-    H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0)
+    H, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5)
     return H
 
 def create_panorama(img1, img2, H):

@@ -2,6 +2,9 @@
 
 mkdir -p input_images
 mkdir -p output_images
+mkdir -p output_images/ORB
+mkdir -p output_images/SIFT
+mkdir -p output_images/BRIEF
 
 # URL to download images from
 BASE_URL="https://www.ic.unicamp.br/~helio/imagens_registro/"
@@ -18,6 +21,7 @@ extract_prefix() {
 }
 
 IMAGES=(input_images/*)
+methods=("ORB" "SIFT" "BRIEF")
 
 declare -A PREFIX_GROUPS
 
@@ -29,11 +33,11 @@ done
 for PREFIX in "${!PREFIX_GROUPS[@]}"; do
     IMAGES_WITH_PREFIX=(${PREFIX_GROUPS[$PREFIX]})
     if [ ${#IMAGES_WITH_PREFIX[@]} -eq 2 ]; then
-        IMAGE1="${IMAGES_WITH_PREFIX[0]}"
-        IMAGE2="${IMAGES_WITH_PREFIX[1]}"
-        OUTPUT_IMAGE="output_images/panorama_${PREFIX}.jpg"
-        python3 "panoramic_join.py" --keypoint-detector ORB "${IMAGE1},${IMAGE2}" "$OUTPUT_IMAGE"
-    else
-        echo "Skipping prefix ${PREFIX} as it does not have exactly two images."
+        for method in "${methods[@]}"; do
+            IMAGE1="${IMAGES_WITH_PREFIX[0]}"
+            IMAGE2="${IMAGES_WITH_PREFIX[1]}"
+            OUTPUT_IMAGE="output_images/${method}/panorama_${PREFIX}.jpg"
+            python3 "panoramic_join.py" --keypoint-detector ${method} "${IMAGE1},${IMAGE2}" "$OUTPUT_IMAGE"
+        done
     fi
 done
